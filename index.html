@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>GEOG 458 Lab 4 – Tile Map Sets</title>
+  <title>GEOG 458 Lab 4 – Schools and Accessibility in Seattle</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -9,8 +9,17 @@
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.js"></script>
 
   <style>
-    body { margin: 0; padding: 0; }
-    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    body { 
+      margin: 0; 
+      padding: 0; 
+      height: 100%;
+      }
+    #map { 
+      position: absolute; 
+      top: 0; 
+      bottom: 0; 
+      width: 100%; 
+      }
 
     #menu {
       background: #fff;
@@ -72,13 +81,11 @@
   <div id="map"></div>
 
   <div id="info">
-    <h1>GEOG 458 Lab 4: Four Tile Map Sets</h1>
+    <h1>GEOG 458 Lab 4: Schools and Accessibility in Seattle</h1>
     <p>
-      This web map visualizes four raster tilesets exported from QGIS (QMetaTiles/QTiles).
-      Use the layer switcher to toggle each tileset on/off for comparison.
-    </p>
-    <p class="small">
-      Tiles are available at zoom levels <b>11–14</b>. If you zoom outside this range, tiles won’t draw.
+      This web map presents four tile map sets that explore how school zones and nearby infrastructure appear at different map styles. 
+      Tileset 2 highlights school zones, while Tileset 4 emphasizes road structure and school locations. 
+      Toggle layers to compare what stands out and what becomes harder to notice under different designs.
     </p>
   </div>
 
@@ -132,7 +139,7 @@
       addTileset("tileset_2", "assets/tileset_2/{z}/{x}/{y}.png", "Tileset 2 – QGIS export", false);
       addTileset("tileset_3", "assets/tileset_3/{z}/{x}/{y}.png", "Tileset 3 – QGIS export", false);
 
-      addTileset("tileset_4", "assets/tilesets_4/{z}/{x}/{y}.png", "Tileset 4 – QGIS export", false);
+      addTileset("tileset_4", "assets/tilesets_4/{z}/{x}/{y}.jpg", "Tileset 4 – QGIS export", false);
 
       map.fitBounds([[-122.38, 47.58], [-122.23, 47.72]], { padding: 40, duration: 200 });
 
@@ -144,7 +151,7 @@
         { id: "tileset_1", label: "Tileset 1: Basemap" },
         { id: "tileset_2", label: "Tileset 2: School Zones" },
         { id: "tileset_3", label: "Tileset 3: Combined" },
-        { id: "tileset_4", label: "Tileset 4: Theme" }
+        { id: "tileset_4", label: "Tileset 4: Road & School Location" }
       ];
 
       for (const layer of layers) {
