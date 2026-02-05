@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GEOG 458 Lab 4 – Tile Map Sets</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.js"></script>
+
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+
+    #menu {
+      background: #fff;
+      position: absolute;
+      z-index: 2;
+      top: 10px;
+      right: 10px;
+      border-radius: 6px;
+      width: 220px;
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    #menu .menu-title{
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px;
+      border-bottom: 1px solid rgba(0,0,0,0.15);
+      background: #fafafa;
+      text-align: center;
+    }
+    #menu a {
+      font-size: 13px;
+      color: #404040;
+      display: block;
+      margin: 0;
+      padding: 10px;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      text-align: center;
+      user-select: none;
+    }
+    #menu a:last-child { border: none; }
+    #menu a:hover { background-color: #f2f2f2; }
+    #menu a.active { background-color: #3887be; color: #ffffff; }
+    #menu a.active:hover { background: #3074a4; }
+
+    #info {
+      position: absolute;
+      z-index: 2;
+      top: 10px;
+      left: 10px;
+      max-width: 380px;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(0,0,0,0.35);
+      border-radius: 10px;
+      padding: 12px 12px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+    #info h1 { margin: 0 0 6px 0; font-size: 15px; line-height: 1.2; }
+    #info p { margin: 0; font-size: 12px; line-height: 1.35; color: #333; }
+    #info .small { margin-top: 8px; font-size: 11px; color: #555; line-height: 1.35; }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+
+  <div id="info">
+    <h1>GEOG 458 Lab 4: Four Tile Map Sets</h1>
+    <p>
+      This web map visualizes four raster tilesets exported from QGIS (QMetaTiles/QTiles).
+      Use the layer switcher to toggle each tileset on/off for comparison.
+    </p>
+    <p class="small">
+      Tiles are available at zoom levels <b>11–14</b>. If you zoom outside this range, tiles won’t draw.
+    </p>
+  </div>
+
+  <nav id="menu">
+    <div class="menu-title">Layers</div>
+  </nav>
+
+  <script>
+    mapboxgl.accessToken =
+      "pk.eyJ1IjoicGFpc2xleXc4MjkiLCJhIjoiY21oZTY4Z3h6MGFpbzJsb2UzbWkxZjZybyJ9.qvAAm5rLQZPLPn8ltX2vLg";
+
+    const map = new mapboxgl.Map({
+      container: "map",
+      style: {
+        version: 8,
+        sources: {},
+        layers: [
+          { id: "bg", type: "background", paint: { "background-color": "#f5f5f5" } }
+        ]
+      },
+      center: [-122.307, 47.655],
+      zoom: 12,
+      minZoom: 11,
+      maxZoom: 14
+    });
+
+    map.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+    map.addControl(new mapboxgl.ScaleControl({ maxWidth: 140, unit: "imperial" }), "bottom-left");
+    map.addControl(new mapboxgl.AttributionControl({ compact: true }));
+
+    function addTileset(layerId, tilesPath, attributionText, visibleByDefault) {
+      const srcId = layerId + "_src";
+
+      map.addSource(srcId, {
+        type: "raster",
+        tiles: [tilesPath],
+        tileSize: 256,
+        attribution: attributionText
+      });
+
+      map.addLayer({
+        id: layerId,
+        type: "raster",
+        source: srcId,
+        layout: { visibility: visibleByDefault ? "visible" : "none" }
+      });
+    }
+
+    map.on("load", () => {
+      addTileset("tileset_1", "assets/tileset_1/{z}/{x}/{y}.png", "Tileset 1 – QGIS export", true);
+      addTileset("tileset_2", "assets/tileset_2/{z}/{x}/{y}.png", "Tileset 2 – QGIS export", false);
+      addTileset("tileset_3", "assets/tileset_3/{z}/{x}/{y}.png", "Tileset 3 – QGIS export", false);
+
+      addTileset("tileset_4", "assets/tilesets_4/{z}/{x}/{y}.png", "Tileset 4 – QGIS export", false);
+
+      map.fitBounds([[-122.38, 47.58], [-122.23, 47.72]], { padding: 40, duration: 200 });
+
+      map.on("error", (e) => console.log("Map error:", e?.error?.message || e));
+    });
+
+    map.on("idle", () => {
+      const layers = [
+        { id: "tileset_1", label: "Tileset 1: Basemap" },
+        { id: "tileset_2", label: "Tileset 2: School Zones" },
+        { id: "tileset_3", label: "Tileset 3: Combined" },
+        { id: "tileset_4", label: "Tileset 4: Theme" }
+      ];
+
+      for (const layer of layers) {
+        if (!map.getLayer(layer.id)) return;
+        if (document.getElementById(layer.id)) continue;
+
+        const link = document.createElement("a");
+        link.id = layer.id;
+        link.href = "#";
+        link.textContent = layer.label;
+        link.className = (layer.id === "tileset_1") ? "active" : "";
+
+        link.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const vis = map.getLayoutProperty(layer.id, "visibility");
+
+          if (vis === "visible") {
+            map.setLayoutProperty(layer.id, "visibility", "none");
+            link.className = "";
+          } else {
+            if (layer.id === "tileset_4") {
+              map.setLayoutProperty("tileset_1", "visibility", "visible");
+              const baseLink = document.getElementById("tileset_1");
+              if (baseLink) baseLink.className = "active";
+            }
+
+            map.setLayoutProperty(layer.id, "visibility", "visible");
+            link.className = "active";
+          }
+
+          // Nudge refresh
+          const z = map.getZoom();
+          map.jumpTo({ zoom: z + 0.0001 });
+          map.jumpTo({ zoom: z });
+        };
+
+        document.getElementById("menu").appendChild(link);
+      }
+    });
+  </script>
+</body>
+</html>
