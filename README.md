@@ -1,7 +1,8 @@
 # PaisleyGEOG458lab4
 
 ## GEOG 458 Lab 4
-https://paisleyw829.github.io/PaisleyGEOG458lab4/
+
+https://paisleyw829.github.io/PaisleyGEOG458lab4/index.html
 
 This web map was created for GEOG 458 Lab 4 and visualizes four tile map sets using Mapbox GL JS.  
 Users can toggle each tileset on and off to compare how different map designs highlight geographic features related to schools and accessibility in Seattle.
